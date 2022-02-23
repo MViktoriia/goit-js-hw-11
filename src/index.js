@@ -1,3 +1,4 @@
+import Notiflix from 'notiflix';
 import './sass/main.scss';
 import { getImages } from './js/api/pixabayApi';
 import imageCardTamplate from './js/components/imageCard.hbs' 
@@ -16,8 +17,16 @@ function formSubmitHandler(event) {
     console.log(searchTerm);
 
     getImages(searchTerm).then(response => {
-        console.log(response.data.hits)
-        renderImages(response.data.hits);
+        const data = response.data.hits;
+
+        if (data.length === 0) {
+
+            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
+        }
+        
+        console.log(data);
+        renderImages(data);
+        
     }).catch(error => console.log(error));
 
 }
