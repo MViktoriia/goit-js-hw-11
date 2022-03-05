@@ -1,33 +1,35 @@
 import Notiflix from 'notiflix';
 import './sass/main.scss';
-import { getImages } from './js/api/pixabayApi';
+import PixabayApiService from './js/api/pixabayApi';
 import imageCardTamplate from './js/components/imageCard.hbs' 
+
 
 const ref = {
     formEl: document.querySelector(".search-form"),
-    galleryEl: document.querySelector(".gallery")    
+    galleryEl: document.querySelector(".gallery"),
+    loadMoreBtn: document.querySelector(".load-more")    
 }
 
+const pixabayApiService = new PixabayApiService;
+
 ref.formEl.addEventListener("submit", formSubmitHandler);
+ref.loadMoreBtn.addEventListener("click", onLoadMoreClick);
+
 
 function formSubmitHandler(event) {
     event.preventDefault();
+    
+    pixabayApiService.query = event.target[0].value;
 
-    const searchTerm = event.target[0].value;
-    console.log(searchTerm);
+    pixabayApiService.getImages();
 
-    getImages(searchTerm).then(response => {
-        const data = response.data.hits;
+    ref.loadMoreBtn.classList.remove('visually-hidden');
 
-        if (data.length === 0) {
+}
 
-            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
-        }
-        
-        console.log(data);
-        renderImages(data);
-        
-    }).catch(error => console.log(error));
+function onLoadMoreClick () {
+    pixabayApiService.getImages();
+    // renderImages(data); 
 
 }
 
