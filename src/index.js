@@ -2,34 +2,48 @@ import Notiflix from 'notiflix';
 import './sass/main.scss';
 import PixabayApiService from './js/api/pixabayApi';
 import imageCardTamplate from './js/components/imageCard.hbs' 
+import LoadMoreBtn from './js/components/load-more-btn';
 
 
 const ref = {
     formEl: document.querySelector(".search-form"),
     galleryEl: document.querySelector(".gallery"),
-    loadMoreBtn: document.querySelector(".load-more")    
+    // loadMoreBtn: document.querySelector(".load-more")    
 }
-
+const loadMoreBtn = new LoadMoreBtn({selector: ".load-more", hidden: true,});
 const pixabayApiService = new PixabayApiService;
 
 ref.formEl.addEventListener("submit", formSubmitHandler);
-ref.loadMoreBtn.addEventListener("click", onLoadMoreClick);
+loadMoreBtn.refs.button.addEventListener("click", onLoadMoreClick);
 
 
 function formSubmitHandler(event) {
     event.preventDefault();
     
+    clearGalleryContainer();
     pixabayApiService.query = event.target[0].value;
 
-    pixabayApiService.getImages();
+    loadMoreBtn.show();
+    loadMoreBtn.disable();
 
-    ref.loadMoreBtn.classList.remove('visually-hidden');
+    pixabayApiService.resetPage();
+    pixabayApiService.getImages().then(data => {
+        if (data.length === 0) {
+    
+            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
+        }
+        renderImages(data);
+        loadMoreBtn.enable();
+    });
 
 }
 
 function onLoadMoreClick () {
-    pixabayApiService.getImages();
-    // renderImages(data); 
+    loadMoreBtn.disable;
+    pixabayApiService.getImages().then(data => {
+        renderImages(data);
+        loadMoreBtn.enable();
+    });
 
 }
 
@@ -39,6 +53,11 @@ function renderImages(images) {
         return { webformatURL, tags, likes, views, comments, downloads };
     });
 
-    ref.galleryEl.innerHTML = imageCardTamplate(imageList);
+    ref.galleryEl.insertAdjacentHTML("beforeend", imageCardTamplate(imageList)); 
         
+}
+
+function clearGalleryContainer() {
+    ref.galleryEl.innerHTML = "";
+
 }
