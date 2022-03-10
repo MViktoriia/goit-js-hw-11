@@ -27,12 +27,17 @@ function formSubmitHandler(event) {
     loadMoreBtn.disable();
 
     pixabayApiService.resetPage();
-    pixabayApiService.getImages().then(data => {
+    pixabayApiService.getImages().then(response => {
+        const data = response.data.hits;
+        const totalHits = response.data.totalHits;
         if (data.length === 0) {
     
-            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");            
+            Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
+            loadMoreBtn.hide();
+            return;            
         }
         renderImages(data);
+        Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
         loadMoreBtn.enable();
     });
 
@@ -40,7 +45,14 @@ function formSubmitHandler(event) {
 
 function onLoadMoreClick () {
     loadMoreBtn.disable;
-    pixabayApiService.getImages().then(data => {
+    pixabayApiService.getImages().then(response => {
+        const data = response.data.hits;
+        if (data.length === 0) {
+    
+            Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+            loadMoreBtn.hide();            
+        }
+                
         renderImages(data);
         loadMoreBtn.enable();
     });
@@ -59,5 +71,6 @@ function renderImages(images) {
 
 function clearGalleryContainer() {
     ref.galleryEl.innerHTML = "";
+    loadMoreBtn.hide();
 
 }

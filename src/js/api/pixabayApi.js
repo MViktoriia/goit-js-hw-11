@@ -17,11 +17,12 @@ export default class PixabayApiService {
 
     getImages() {
         return axios.get(`${PIXABAY_API_URL}?key=${pixabayApiKey}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`).then(response => {
-            const data = response.data.hits;
+            // const data = response.data.hits;
     
             this.incrementPage();
-            console.log(data);
-            return data;       
+            console.log(response.data);
+            // console.log(data);
+            return response;       
             
         }).catch(error => console.log(error));
     }
