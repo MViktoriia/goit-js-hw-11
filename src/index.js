@@ -7,15 +7,13 @@ import LoadMoreBtn from './js/components/load-more-btn';
 
 const ref = {
     formEl: document.querySelector(".search-form"),
-    galleryEl: document.querySelector(".gallery"),
-    // loadMoreBtn: document.querySelector(".load-more")    
+    galleryEl: document.querySelector(".gallery"),    
 }
 const loadMoreBtn = new LoadMoreBtn({selector: ".load-more", hidden: true,});
 const pixabayApiService = new PixabayApiService;
 
 ref.formEl.addEventListener("submit", formSubmitHandler);
 loadMoreBtn.refs.button.addEventListener("click", onLoadMoreClick);
-
 
 function formSubmitHandler(event) {
     event.preventDefault();
@@ -39,15 +37,20 @@ function formSubmitHandler(event) {
         renderImages(data);
         Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
         loadMoreBtn.enable();
-    });
+    }).catch(error => console.log(error));
 
 }
 
 function onLoadMoreClick () {
     loadMoreBtn.disable;
+    console.log(pixabayApiService.page);
     pixabayApiService.getImages().then(response => {
         const data = response.data.hits;
-        if (data.length === 0) {
+        const totalData = response.data.totalHits;
+        
+        console.log((pixabayApiService.page)  * data.length - totalData);
+                
+        if (((pixabayApiService.page  * data.length - totalData) > data.length) || (data.length === 0)) {
     
             Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
             loadMoreBtn.hide();            
@@ -55,7 +58,8 @@ function onLoadMoreClick () {
                 
         renderImages(data);
         loadMoreBtn.enable();
-    });
+    
+    }).catch(error => console.log(error));
 
 }
 

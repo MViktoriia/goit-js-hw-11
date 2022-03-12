@@ -15,16 +15,12 @@ export default class PixabayApiService {
 
     }
 
-    getImages() {
-        return axios.get(`${PIXABAY_API_URL}?key=${pixabayApiKey}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`).then(response => {
-            // const data = response.data.hits;
+    async getImages() {
+        const response = await axios.get(`${PIXABAY_API_URL}?key=${pixabayApiKey}&q=${this.searchQuery}&image_type=photo&orientation=horizontal&safesearch=true&page=${this.page}&per_page=40`);
+        this.incrementPage();
+        console.log(response.data);
+        return response;       
     
-            this.incrementPage();
-            console.log(response.data);
-            // console.log(data);
-            return response;       
-            
-        }).catch(error => console.log(error));
     }
 
     incrementPage() {
