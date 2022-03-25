@@ -62,6 +62,7 @@ function onLoadMoreClick () {
         }
                 
         renderImages(data);
+        smoothScroll();
         lightbox.refresh();
         loadMoreBtn.enable();
     
@@ -83,4 +84,12 @@ function clearGalleryContainer() {
     ref.galleryEl.innerHTML = "";
     loadMoreBtn.hide();
 
+}
+
+function smoothScroll() {
+  const { height: cardHeight } = document.querySelector('.gallery').firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+    top: cardHeight * 2,
+    behavior: 'smooth',
+  });
 }
