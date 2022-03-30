@@ -3,7 +3,7 @@ import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import './sass/main.scss';
 import PixabayApiService from './js/api/pixabayApi';
-import imageCardTamplate from './js/components/imageCard.hbs' 
+import imageCardTamplate from './js/components/imageCard.hbs';
 import LoadMoreBtn from './js/components/load-more-btn';
 
 const ref = {
@@ -35,6 +35,7 @@ function formSubmitHandler(event) {
     
             Notiflix.Notify.failure("Sorry, there are no images matching your search query. Please try again.");
             loadMoreBtn.hide();
+            event.target.reset();
             return;            
         }
         renderImages(data);
@@ -72,8 +73,8 @@ function onLoadMoreClick () {
 
 function renderImages(images) {
     const imageList = images.map(image => {
-        const { webformatURL, tags, likes, views, comments, downloads } = image;
-        return { webformatURL, tags, likes, views, comments, downloads };
+        const { largeImageURL, webformatURL, tags, likes, views, comments, downloads } = image;
+        return { largeImageURL, webformatURL, tags, likes, views, comments, downloads };
     });
 
     ref.galleryEl.insertAdjacentHTML("beforeend", imageCardTamplate(imageList));
